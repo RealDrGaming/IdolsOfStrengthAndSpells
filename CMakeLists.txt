@@ -16,4 +16,6 @@ add_executable(IdolsOfStrengthAndSpells
         src/core/GameManager.cpp
         src/core/GameManager.h
         src/items/Item.cpp
-        src/items/Item.h)
+        src/items/Item.h
+        src/characters/Warrior.cpp
+        src/characters/Warrior.h)
