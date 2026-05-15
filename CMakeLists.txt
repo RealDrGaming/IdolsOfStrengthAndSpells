@@ -18,4 +18,8 @@ add_executable(IdolsOfStrengthAndSpells
         src/items/Item.cpp
         src/items/Item.h
         src/characters/Warrior.cpp
-        src/characters/Warrior.h)
+        src/characters/Warrior.h
+        src/characters/Mage.cpp
+        src/characters/Mage.h
+        src/characters/Archer.cpp
+        src/characters/Archer.h)

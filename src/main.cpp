@@ -2,24 +2,23 @@
 #include <ctime>
 #include <cstdlib>
 #include "characters/Warrior.h"
+#include "characters/Archer.h"
+#include "characters/Mage.h"
 
 int main() {
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
 
-    Warrior myCharacter("Petio");
+    Archer myCharacter("Petio");
 
-    std::cout << "- Info about warrior -" << std::endl;
+    std::cout << "- Info about character -" << std::endl;
     std::cout << "Name: " << myCharacter.getName() << std::endl;
     std::cout << "Curr HP: " << myCharacter.getCurrentHP() << " / " << myCharacter.getMaxHP() << std::endl;
     std::cout << "Level: 1" << std::endl;
 
     std::cout << "\n-Attack test -" << std::endl;
-    for (int i = 0; i < 3; ++i)
-    {
-        int damage = myCharacter.calculateDamage();
-        std::cout << "Attack " << i + 1 << ": " << myCharacter.getName()
-                  << " deals " << damage << " dmg. (needs to be: 1-8)" << std::endl;
-    }
+    int damage = myCharacter.calculateDamage();
+    std::cout << "Attack " << i + 1 << ": " << myCharacter.getName()
+                << " deals " << damage << " dmg." << std::endl;
 
     std::cout << "\n- Defense test -" << std::endl;
     int incomingAttack = 10;
