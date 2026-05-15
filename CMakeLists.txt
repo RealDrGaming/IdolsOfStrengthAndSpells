@@ -9,4 +9,11 @@ include_directories(src)
 
 add_executable(IdolsOfStrengthAndSpells
         src/main.cpp
-        src/Character.h)
+        src/characters/Character.h
+        src/characters/Character.cpp
+        src/utils/Serializer.cpp
+        src/utils/Serializer.h
+        src/core/GameManager.cpp
+        src/core/GameManager.h
+        src/items/Item.cpp
+        src/items/Item.h)

@@ -1,6 +1,6 @@
 ﻿#include <print>
 
-#include "Character.h"
+#include "characters/Character.h"
 
 int main() {
     std::print("Trying to make it work");
