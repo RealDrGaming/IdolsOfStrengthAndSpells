@@ -18,10 +18,16 @@ int User::getAvailableXP() const
     return _availableXP;
 }
 
-double User::getWinRate() const {
+double User::getWinRate() const
+{
     if (_battlesPlayed == 0) return 0.0;
 
     return (static_cast<double>(_battlesWon) / _battlesPlayed) * 100.0;
+}
+
+bool User::checkPassword(const std::string& inputPass) const
+{
+    return _password == inputPass;
 }
 
 void User::addXP(int amount)
@@ -50,7 +56,9 @@ void User::recordBattleResult(bool won)
 
 void User::addCharacter(std::unique_ptr<Character> newCharacter)
 {
-    _characters.push_back(std::move(newCharacter));
+    newCharacter->setOwner(this->getUsername());
+
+    _characters.emplace_back(std::move(newCharacter));
 }
 
 const std::vector<std::unique_ptr<Character>>& User::getCharacters() const

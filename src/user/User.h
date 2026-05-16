@@ -1,4 +1,5 @@
 ﻿#pragma once
+
 #include <memory>
 #include <string>
 #include <vector>
@@ -24,6 +25,7 @@ public:
     int getTotalXP() const;
     int getAvailableXP() const;
     double getWinRate() const;
+    bool checkPassword(const std::string& inputPass) const;
 
     void addXP(int amount);
     bool spendXP(int amount);

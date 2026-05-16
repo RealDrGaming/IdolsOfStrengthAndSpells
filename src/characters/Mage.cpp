@@ -2,7 +2,7 @@
 #include <cstdlib>
 #include <iostream>
 
-Mage::Mage(const std::string& name) : Character(name, 12) { }
+Mage::Mage(const std::string& name) : Character(name, 12, 12) { }
 
 void Mage::takeDamage(int amount)
 {
@@ -11,8 +11,9 @@ void Mage::takeDamage(int amount)
     if (_currHp < 0) _currHp = 0;
 }
 
-int Mage::calculateDamage() {
-    int baseDamage = (std::rand() % 12) + 1;
+int Mage::calculateDamage()
+{
+    int baseDamage = (std::rand() % _maxDamage) + 1;
     
     std::cout << "\n[Mage] " << _name << " will deal: " << baseDamage << "dmg" << std::endl;
     std::cout << "Do you want to activate Spell Magnification? "

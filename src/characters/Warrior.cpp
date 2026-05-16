@@ -2,11 +2,11 @@
 #include <cstdlib>
 #include <algorithm>
 
-Warrior::Warrior(const std::string& name) : Character(name, 20) { }
+Warrior::Warrior(const std::string& name) : Character(name, 20, 8) { }
 
 int Warrior::calculateDamage()
 {
-    return (std::rand() % 8) + 1;
+    return (std::rand() % _maxDamage) + 1;
 }
 
 void Warrior::takeDamage(int amount)
