@@ -2,47 +2,77 @@
 
 #include <algorithm>
 #include <iostream>
+
 #include "../characters/Warrior.h"
 #include "../characters/Mage.h"
 #include "../characters/Archer.h"
 
+#include "../items/HealingPotion.h"
+#include "../items/Blade.h"
+#include "../items/Mirror.h"
+#include "../items/Ray.h"
+#include "../items/Shield.h"
+
 GameManager::GameManager() : _currentUser(nullptr) { }
 
-void GameManager::run()
+GameManager& GameManager::getInstance()
 {
+    static GameManager instance;
+
+    return instance;
+}
+
+void GameManager::run() {
     bool isRunning = true;
+
     while (isRunning)
     {
-        if (_currentUser == nullptr)
-        {
-            // --- guest menu ---
+        if (_currentUser == nullptr) isRunning = showMainMenu();
+        else showUserMenu();
+    }
+}
 
-            std::cout << "\n=== Idols of Strength and Spells ===\n";
-            std::cout << "1. Register\n";
-            std::cout << "2. Login\n";
-            std::cout << "3. Leave\n";
-            std::cout << "I choose: ";
+bool GameManager::showMainMenu()
+{
+    // --- guest menu ---
 
-            int choice;
-            std::cin >> choice;
+    std::cout << "\n=== Idols of Strength and Spells ===\n";
+    std::cout << "1. Register\n";
+    std::cout << "2. Login\n";
+    std::cout << "3. Leave\n";
+    std::cout << "I choose: ";
 
-            if (choice == 1) registerUser();
-            else if (choice == 2) loginUser();
-            else if (choice == 3) isRunning = false;
-        }
-        else
-        {
-            // --- logged user menu ---
+    int choice;
+    std::cin >> choice;
 
-            std::cout << "\nWelcome, " << _currentUser->getUsername() << "!\n";
-            std::cout << "1. Leave\n";
+    if (choice == 1) registerUser();
+    else if (choice == 2) loginUser();
+    else if (choice == 3) return false;
 
-            int choice;
-            std::cin >> choice;
+    return true;
+}
 
-            // logout
-            if (choice == 1) _currentUser = nullptr;
-        }
+void GameManager::showUserMenu()
+{
+    // --- logged user menu ---
+
+    std::cout << "\nWelcome, " << _currentUser->getUsername() << "!\n";
+    std::cout << "1. Battle\n";
+    std::cout << "2. Store\n";
+    std::cout << "3. Ranking\n";
+    std::cout << "4. Logout\n";
+    std::cout << "I choose: ";
+
+    int choice;
+    std::cin >> choice;
+
+    if (choice == 1); //todo: implement battling
+    else if (choice == 2); // todo: implement the store
+    else if (choice == 3); // todo: implement ranking system
+    else if (choice == 4)
+    {
+        // logout
+        _currentUser = nullptr;
     }
 }
 
@@ -60,7 +90,10 @@ void GameManager::registerUser()
     std::cout << "\nChoose starting character! ( free )\n";
     newUser->addCharacter(chooseStartingCharacter());
 
-    _users.push_back(std::move(newUser));
+    std::cout << "\nChoose a starting item! ( free )!\n";
+    newUser->addItem(chooseStartingItem());
+
+    _users.emplace_back(std::move(newUser));
     std::cout << "Registered! You can enter your profile now!.\n";
 }
 
@@ -86,6 +119,29 @@ std::unique_ptr<Character> GameManager::chooseStartingCharacter()
         default:
             std::cout << "Invalid choice. Defaulting to Warrior.\n";
             return std::make_unique<Warrior>(charName);
+    }
+}
+
+std::unique_ptr<Item> GameManager::chooseStartingItem()
+{
+    int choice = 0;
+    std::cout << "1. Healing Potion (Heals 5-10 HP) \n";
+    std::cout << "2. Blade (Doubles next attack's dmg)\n";
+    std::cout << "3. Mirror (Negates opponent's next special ability)\n";
+    std::cout << "4. Ray (Negates the effect of Mirror)\n";
+    std::cout << "5. Shield (Completely blocks opponent's next attack)\n";
+    std::cout << "I choose item: ";
+    std::cin >> choice;
+
+    switch (choice) {
+        case 1: return std::make_unique<HealingPotion>();
+        case 2: return std::make_unique<Blade>();
+        case 3: return std::make_unique<Mirror>();
+        case 4: return std::make_unique<Ray>();
+        case 5: return std::make_unique<Shield>();
+        default:
+            std::cout << "Invalid choice. Defaulting to Healing Potion.\n";
+            return std::make_unique<HealingPotion>();
     }
 }
 

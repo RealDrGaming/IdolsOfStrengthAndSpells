@@ -24,4 +24,14 @@ add_executable(IdolsOfStrengthAndSpells
         src/characters/Archer.cpp
         src/characters/Archer.h
         src/user/user.cpp
-        src/user/user.h)
+        src/user/user.h
+        src/items/HealingPotion.cpp
+        src/items/HealingPotion.h
+        src/items/Blade.cpp
+        src/items/Blade.h
+        src/items/Mirror.cpp
+        src/items/Mirror.h
+        src/items/Ray.cpp
+        src/items/Ray.h
+        src/items/Shield.cpp
+        src/items/Shield.h)

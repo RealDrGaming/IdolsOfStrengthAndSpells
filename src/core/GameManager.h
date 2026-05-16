@@ -6,18 +6,26 @@
 
 class GameManager {
 private:
-    std::vector<std::unique_ptr<User>> _users;
-
     // wont cause memory leaks bcuz it doesnt allocate memory
     User* _currentUser;
+    std::vector<std::unique_ptr<User>> _users;
 
-    void showMainMenu();
+    bool showMainMenu();
+    void showUserMenu();
+
+    GameManager();
+
     void registerUser();
     void loginUser();
 
     std::unique_ptr<Character> chooseStartingCharacter();
+    std::unique_ptr<Item> chooseStartingItem();
 
 public:
-    GameManager();
+    GameManager(const GameManager&) = delete;
+    GameManager& operator=(const GameManager&) = delete;
+
+    static GameManager& getInstance();
+
     void run();
 };

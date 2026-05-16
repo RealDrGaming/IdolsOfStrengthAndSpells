@@ -65,3 +65,19 @@ const std::vector<std::unique_ptr<Character>>& User::getCharacters() const
 {
     return _characters;
 }
+
+void User::addItem(std::unique_ptr<Item> newItem)
+{
+    _items.emplace_back(std::move(newItem));
+}
+
+const std::vector<std::unique_ptr<Item>>& User::getItems() const
+{
+    return _items;
+}
+
+void User::removeItem(size_t index)
+{
+    if (index < _items.size())
+        _items.erase(_items.begin() + index);
+}

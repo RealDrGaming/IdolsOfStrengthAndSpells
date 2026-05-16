@@ -13,6 +13,10 @@ protected:
     int _maxDamage;
     std::string _ownerUsername;
 
+    bool _hasBladeActive;
+    bool _hasMirrorActive;
+    bool _hasShieldActive;
+
 public:
     Character(const std::string& name , int hp, int maxDamage);
 
@@ -37,4 +41,13 @@ public:
 
     void levelUpMaxHealth();
     void levelUpMaxDamage();
+
+    bool hasBladeActive() const;
+    void setBladeActive(bool state);
+
+    bool hasMirrorActive() const;
+    void setMirrorActive(bool state);
+
+    bool hasShieldActive() const;
+    void setShieldActive(bool state);
 };

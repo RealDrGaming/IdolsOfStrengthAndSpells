@@ -6,9 +6,7 @@
 int main() {
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
 
-    GameManager gameManager;
-
-    gameManager.run();
+    GameManager::getInstance().run();
 
     return 0;
 }

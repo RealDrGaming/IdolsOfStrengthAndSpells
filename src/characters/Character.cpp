@@ -1,7 +1,8 @@
 ﻿#include "Character.h"
 
 Character::Character(const std::string& name, int hp, int maxDamage)
-    : _name(name), _maxHp(hp), _currHp(hp), _level(1), _maxDamage(maxDamage), _ownerUsername("") { }
+    : _name(name), _maxHp(hp), _currHp(hp), _level(1), _maxDamage(maxDamage), _ownerUsername(""),
+        _hasBladeActive(false), _hasMirrorActive(false), _hasShieldActive(false) { }
 
 void Character::triggerSpecialAbility() { }
 
@@ -44,3 +45,12 @@ void Character::levelUpMaxDamage()
     _level++;
     _maxDamage += 1;
 }
+
+bool Character::hasBladeActive() const { return _hasBladeActive; }
+void Character::setBladeActive(bool isBladeActive) { _hasBladeActive = isBladeActive; }
+
+bool Character::hasMirrorActive() const { return _hasMirrorActive; }
+void Character::setMirrorActive(bool isMirrorActive) { _hasMirrorActive = isMirrorActive; }
+
+bool Character::hasShieldActive() const { return _hasShieldActive; }
+void Character::setShieldActive(bool isShieldActive) { _hasShieldActive = isShieldActive; }

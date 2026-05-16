@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include "../characters/Character.h"
+#include "../items/Item.h"
 
 class User {
 private:
@@ -17,6 +18,7 @@ private:
     int _battlesWon;
 
     std::vector<std::unique_ptr<Character>> _characters;
+    std::vector<std::unique_ptr<Item>> _items;
 
 public:
     User(const std::string& username, const std::string& password);
@@ -33,4 +35,8 @@ public:
 
     void addCharacter(std::unique_ptr<Character> newCharacter);
     const std::vector<std::unique_ptr<Character>>& getCharacters() const;
+
+    void addItem(std::unique_ptr<Item> newItem);
+    const std::vector<std::unique_ptr<Item>>& getItems() const;
+    void removeItem(size_t index);
 };
