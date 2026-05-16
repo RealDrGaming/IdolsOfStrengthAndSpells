@@ -22,4 +22,6 @@ add_executable(IdolsOfStrengthAndSpells
         src/characters/Mage.cpp
         src/characters/Mage.h
         src/characters/Archer.cpp
-        src/characters/Archer.h)
+        src/characters/Archer.h
+        src/user/user.cpp
+        src/user/user.h)
