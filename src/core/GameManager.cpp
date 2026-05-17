@@ -13,6 +13,8 @@
 #include "../items/Ray.h"
 #include "../items/Shield.h"
 
+#include "StoreManager.h"
+
 GameManager::GameManager() : _currentUser(nullptr) { }
 
 GameManager& GameManager::getInstance()
@@ -67,7 +69,11 @@ void GameManager::showUserMenu()
     std::cin >> choice;
 
     if (choice == 1); //todo: implement battling
-    else if (choice == 2); // todo: implement the store
+    else if (choice == 2)
+    {
+        StoreManager store(_currentUser);
+        store.open();
+    }
     else if (choice == 3); // todo: implement ranking system
     else if (choice == 4)
     {
