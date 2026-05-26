@@ -1,6 +1,10 @@
-﻿#include "Archer.h"
-#include <cstdlib>
+﻿#include <cstdlib>
 #include <iostream>
+#include <print>
+
+#include "Archer.h"
+
+#include "../utils/Input.h"
 
 Archer::Archer(const std::string& name) : Character(name, 15, 8) { }
 
@@ -17,23 +21,21 @@ int Archer::calculateDamage()
 
     if (baseDamage >= 1 && baseDamage <= 4)
     {
-        std::cout << "\n[Archer] " << _name << " will deal: " << baseDamage << "dmg" << std::endl;
-        std::cout << "Do you want to use Poison Arrow and double the damage dealt? (y/n): ";
-        
-        char choice;
-        std::cin >> choice;
-        
-        if (choice == 'y' || choice == 'Y')
+        std::println("\n[Archer] {} will deal: {}dmg", _name, baseDamage);
+        std::print("Do you want to use Poison Arrow and double the damage dealt? (y/n): ");
+        std::fflush(stdout);
+
+        if (Input::getYesNo())
         {
             int newDamage = baseDamage * 2;
-            std::cout << "Poison Arrow was activated! Damage will now be: " << newDamage << "dmg" << std::endl;
+            std::println("Poison Arrow was activated! Damage will now be: {}dmg", newDamage);
             return newDamage;
         }
     }
     else
     {
-        std::cout << "\n[Archer] " << _name << " will deal: " << baseDamage << std::endl;
-        std::cout << "Damage is above 4, Poison Arrow cannot be activated!" << std::endl;
+        std::println("\n[Archer] {} will deal: {}", _name, baseDamage);
+        std::println("Damage is above 4, Poison Arrow cannot be activated!");
     }
 
     return baseDamage;

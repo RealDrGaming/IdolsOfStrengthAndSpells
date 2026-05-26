@@ -1,5 +1,8 @@
-﻿#include "StoreManager.h"
-#include <iostream>
+﻿#include <print>
+#include <cstdio>
+
+#include "StoreManager.h"
+#include "../utils/Input.h"
 
 #include "../characters/Warrior.h"
 #include "../characters/Mage.h"
@@ -17,16 +20,16 @@ void StoreManager::open()
     bool inStore = true;
     while (inStore)
     {
-        std::cout << "\n=== STORE ===\n";
-        std::cout << "Available XP: " << _customer->getAvailableXP() << "\n";
-        std::cout << "1. Buy Item\n";
-        std::cout << "2. Buy new Character (50 XP)\n";
-        std::cout << "3. Level up existing Character (100 XP)\n";
-        std::cout << "4. Back to Main Menu\n";
-        std::cout << "I choose: ";
+        std::println("\n=== STORE ===");
+        std::println("Available XP: {}", _customer->getAvailableXP());
+        std::println("1. Buy Item");
+        std::println("2. Buy new Character (50 XP)");
+        std::println("3. Level up existing Character (100 XP)");
+        std::println("4. Back to Main Menu");
+        std::print("I choose: ");
+        std::fflush(stdout);
 
-        int choice;
-        std::cin >> choice;
+        int choice = Input::getInt(1, 4);
 
         if (choice == 1) buyItem();
         else if (choice == 2) buyCharacter();
@@ -37,18 +40,19 @@ void StoreManager::open()
 
 void StoreManager::buyItem()
 {
-    std::cout << "\n--- Item Purchase ---\n";
-    std::cout << "Available XP: " << _customer->getAvailableXP() << "\n";
-    std::cout << "1. Health Potion (30 XP)\n";
-    std::cout << "2. Blade (50 XP)\n";
-    std::cout << "3. Mirror (80 XP)\n";
-    std::cout << "4. Ray (90 XP)\n";
-    std::cout << "5. Shield (100 XP)\n";
-    std::cout << "6. Back\n";
-    std::cout << "I choose: ";
+    std::println("\n--- Item Purchase ---");
+    std::println("Available XP: {}", _customer->getAvailableXP());
+    std::println("1. Health Potion (30 XP)");
+    std::println("2. Blade (50 XP)");
+    std::println("3. Mirror (80 XP)");
+    std::println("4. Ray (90 XP)");
+    std::println("5. Shield (100 XP)");
+    std::println("6. Back");
+    std::print("I choose: ");
+    std::fflush(stdout);
 
-    int choice;
-    std::cin >> choice;
+    int choice = Input::getInt(1, 6);
+    if (choice == 6) return;
 
     int cost = 0;
     if (choice == 1) cost = 30;
@@ -56,7 +60,6 @@ void StoreManager::buyItem()
     else if (choice == 3) cost = 80;
     else if (choice == 4) cost = 90;
     else if (choice == 5) cost = 100;
-    else return;
 
     if (_customer->spendXP(cost))
     {
@@ -73,111 +76,98 @@ void StoreManager::buyItem()
             case 5: _customer->addItem(std::make_unique<Shield>());
                 break;
         }
-        std::cout << "Purchase of Item successful!\n";
+        std::println("Purchase of Item successful!");
     }
     else
     {
-        std::cout << "Not enough XP!\n";
+        std::println("Not enough XP!");
     }
 }
 
 void StoreManager::buyCharacter()
 {
-    std::cout << "\n--- Character Purchase ---\n";
+    std::println("\n--- Character Purchase ---");
     if (_customer->spendXP(50))
     {
-        std::cout << "Successfully spent 50XP on new Character!. ";
+        std::print("Successfully spent 50XP on new Character! ");
         _customer->addCharacter(createCharacterForSale());
-        std::cout << "The Character is added in your profile!\n";
+        std::println("The Character is added to your profile!");
     }
     else
     {
-        std::cout << "Not enough XP (Required - 50XP)!\n";
+        std::println("Not enough XP (Required - 50XP)!");
     }
 }
 
 std::unique_ptr<Character> StoreManager::createCharacterForSale()
 {
-    int choice = 0;
-    std::string charName;
+    std::println("1. Warrior (20 HP, d8 dmg, Block)");
+    std::println("2. Mage (12 HP, d12 dmg, Spell Magnification)");
+    std::println("3. Archer (15 HP, d8 dmg, Poison Arrow)");
+    std::print("I choose: ");
+    std::fflush(stdout);
 
-    std::cout << "1. Warrior (20 HP, d8 dmg, Block)\n";
-    std::cout << "2. Mage (12 HP, d12 dmg, Spell Magnification)\n";
-    std::cout << "3. Archer (15 HP, d8 dmg, Poison Arrow)\n";
-    std::cout << "I choose: ";
-    std::cin >> choice;
+    int choice = Input::getInt(1, 3);
 
-    std::cout << "My character's name is: ";
-    std::cin >> charName;
+    std::print("My character's name is: ");
+    std::fflush(stdout);
+    std::string charName = Input::getString();
 
     switch (choice)
     {
         case 1: return std::make_unique<Warrior>(charName);
         case 2: return std::make_unique<Mage>(charName);
         case 3: return std::make_unique<Archer>(charName);
-        default:
-            std::cout << "Invalid choice. Defaulting to Warrior.\n";
-            return std::make_unique<Warrior>(charName);
+        default: return std::make_unique<Warrior>(charName); // wont ever be reached, kept for comp. safety
     }
 }
 
 void StoreManager::levelUpCharacter()
 {
-    std::cout << "\n--- Levelling Up of Character ---\n";
+    std::println("\n--- Levelling Up of Character ---");
     const auto& characters = _customer->getCharacters();
     
     if (characters.empty())
     {
-        std::cout << "You don't have any Characters!\n";
+        std::println("You don't have any Characters!");
         return;
     }
 
-    std::cout << "Choose Character:\n";
+    std::println("Choose Character:");
     for (size_t i = 0; i < characters.size(); ++i)
     {
-        std::cout << i + 1 << ". " << characters[i]->getName() 
-                    << " (Level " << characters[i]->getLevel()
-                    << ", HP: " << characters[i]->getMaxHP() << ")\n";
+        std::println("{}. {} (Level {}, HP: {})",
+            i + 1, characters[i]->getName(), characters[i]->getLevel(), characters[i]->getMaxHP());
     }
     
-    int charChoice;
-    std::cin >> charChoice;
-    
-    if (charChoice < 1 || charChoice > static_cast<int>(characters.size()))
-    {
-        std::cout << "Invalid choice.\n";
-        return;
-    }
+    std::print("I choose: ");
+    std::fflush(stdout);
+
+    int charChoice = Input::getInt(1, static_cast<int>(characters.size()));
 
     if (_customer->spendXP(100)) {
-        std::cout << "\nChoose level up stat increase:\n";
-        std::cout << "1. Increase max HP by 2\n";
-        std::cout << "2. Increase max DMG by 1\n";
-        std::cout << "I choose: ";
-        
-        int bonusChoice;
-        std::cin >> bonusChoice;
-        
+        std::println("\nChoose level up stat increase:");
+        std::println("1. Increase max HP by 2");
+        std::println("2. Increase max DMG by 1");
+        std::print("I choose: ");
+        std::fflush(stdout);
+
+        int bonusChoice = Input::getInt(1, 2);
         Character* selectedChar = characters[charChoice - 1].get();
         
         if (bonusChoice == 1)
         {
             selectedChar->levelUpMaxHealth();
-            std::cout << selectedChar->getName() << " now has " << selectedChar->getMaxHP() << " maximum HP!\n";
+            std::println("{} now has {} maximum HP!", selectedChar->getName(), selectedChar->getMaxHP());
         }
         else if (bonusChoice == 2)
         {
             selectedChar->levelUpMaxDamage();
-            std::cout << selectedChar->getName() << " now deals more DMG!\n";
-        }
-        else
-        {
-            std::cout << "Invalid choice. Defaulting to maximum HP increase.\n";
-            selectedChar->levelUpMaxHealth();
+            std::println("{} now deals more DMG!", selectedChar->getName());
         }
     }
     else
     {
-        std::cout << "Not enough XP (Required 100 XP)!\n";
+        std::println("Not enough XP (Required 100 XP)!");
     }
 }

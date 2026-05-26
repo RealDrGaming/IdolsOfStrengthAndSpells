@@ -1,7 +1,9 @@
 ﻿#include "GameManager.h"
 
 #include <algorithm>
-#include <iostream>
+#include <print>
+#include <string>
+#include <cstdio>
 
 #include "../characters/Warrior.h"
 #include "../characters/Mage.h"
@@ -14,6 +16,8 @@
 #include "../items/Shield.h"
 
 #include "StoreManager.h"
+
+#include "../utils/Input.h"
 
 GameManager::GameManager() : _currentUser(nullptr) { }
 
@@ -38,14 +42,14 @@ bool GameManager::showMainMenu()
 {
     // --- guest menu ---
 
-    std::cout << "\n=== Idols of Strength and Spells ===\n";
-    std::cout << "1. Register\n";
-    std::cout << "2. Login\n";
-    std::cout << "3. Leave\n";
-    std::cout << "I choose: ";
+    std::println("\n=== Idols of Strength and Spells ===");
+    std::println("1. Register");
+    std::println("2. Login");
+    std::println("3. Leave");
+    std::print("I choose: ");
+    std::fflush(stdout);
 
-    int choice;
-    std::cin >> choice;
+    int choice = Input::getInt(1, 3);
 
     if (choice == 1) registerUser();
     else if (choice == 2) loginUser();
@@ -58,15 +62,15 @@ void GameManager::showUserMenu()
 {
     // --- logged user menu ---
 
-    std::cout << "\nWelcome, " << _currentUser->getUsername() << "!\n";
-    std::cout << "1. Battle\n";
-    std::cout << "2. Store\n";
-    std::cout << "3. Ranking\n";
-    std::cout << "4. Logout\n";
-    std::cout << "I choose: ";
+    std::println("\nWelcome, {}!", _currentUser->getUsername());
+    std::println("1. Battle");
+    std::println("2. Store");
+    std::println("3. Ranking");
+    std::println("4. Logout");
+    std::print("I choose: ");
+    std::fflush(stdout);
 
-    int choice;
-    std::cin >> choice;
+    int choice = Input::getInt(1, 4);
 
     if (choice == 1); //todo: implement battling
     else if (choice == 2)
@@ -84,82 +88,83 @@ void GameManager::showUserMenu()
 
 void GameManager::registerUser()
 {
-    std::string username, password;
-    std::cout << "\n--- Register ---\n";
-    std::cout << "Username: ";
-    std::cin >> username;
-    std::cout << "Password: ";
-    std::cin >> password;
+    std::println("\n--- Register ---");
+    std::print("Username: ");
+    std::fflush(stdout);
+    std::string username = Input::getString();
+
+    std::print("Password: ");
+    std::fflush(stdout);
+    std::string password = Input::getString();
 
     auto newUser = std::make_unique<User>(username, password);
 
-    std::cout << "\nChoose starting character! ( free )\n";
+    std::println("\nChoose starting character! ( free )");
     newUser->addCharacter(chooseStartingCharacter());
 
-    std::cout << "\nChoose a starting item! ( free )!\n";
+    std::println("\nChoose a starting item! ( free )!");
     newUser->addItem(chooseStartingItem());
 
     _users.emplace_back(std::move(newUser));
-    std::cout << "Registered! You can enter your profile now!.\n";
+    std::println("Registered! You can enter your profile now!.");
 }
 
 std::unique_ptr<Character> GameManager::chooseStartingCharacter()
 {
-    int choice = 0;
-    std::string charName;
+    std::println("1. Warrior (20 HP, d8 dmg, Block)");
+    std::println("2. Mage (12 HP, d12 dmg, Spell Magnification)");
+    std::println("3. Archer (15 HP, d8 dmg, Poison Arrow)");
+    std::print("I choose: ");
+    std::fflush(stdout);
 
-    std::cout << "1. Warrior (20 HP, d8 dmg, Block)\n";
-    std::cout << "2. Mage (12 HP, d12 dmg, Spell Magnification)\n";
-    std::cout << "3. Archer (15 HP, d8 dmg, Poison Arrow)\n";
-    std::cout << "I choose: ";
-    std::cin >> choice;
+    int choice = Input::getInt(1, 3);
 
-    std::cout << "My character's name is: ";
-    std::cin >> charName;
+    std::print("My character's name is: ");
+    std::fflush(stdout);
+    std::string charName = Input::getString();
 
     switch (choice)
     {
         case 1: return std::make_unique<Warrior>(charName);
         case 2: return std::make_unique<Mage>(charName);
         case 3: return std::make_unique<Archer>(charName);
-        default:
-            std::cout << "Invalid choice. Defaulting to Warrior.\n";
-            return std::make_unique<Warrior>(charName);
+        default: return std::make_unique<Warrior>(charName); // wont ever be reached, kept for comp. safety
     }
 }
 
 std::unique_ptr<Item> GameManager::chooseStartingItem()
 {
-    int choice = 0;
-    std::cout << "1. Healing Potion (Heals 5-10 HP) \n";
-    std::cout << "2. Blade (Doubles next attack's dmg)\n";
-    std::cout << "3. Mirror (Negates opponent's next special ability)\n";
-    std::cout << "4. Ray (Negates the effect of Mirror)\n";
-    std::cout << "5. Shield (Completely blocks opponent's next attack)\n";
-    std::cout << "I choose item: ";
-    std::cin >> choice;
+    std::println("1. Healing Potion (Heals 5-10 HP)");
+    std::println("2. Blade (Doubles next attack's dmg)");
+    std::println("3. Mirror (Negates opponent's next special ability)");
+    std::println("4. Ray (Negates the effect of Mirror)");
+    std::println("5. Shield (Completely blocks opponent's next attack)");
+    std::print("I choose item: ");
+    std::fflush(stdout);
 
-    switch (choice) {
+    int choice = Input::getInt(1, 5);
+
+    switch (choice)
+    {
         case 1: return std::make_unique<HealingPotion>();
         case 2: return std::make_unique<Blade>();
         case 3: return std::make_unique<Mirror>();
         case 4: return std::make_unique<Ray>();
         case 5: return std::make_unique<Shield>();
-        default:
-            std::cout << "Invalid choice. Defaulting to Healing Potion.\n";
-            return std::make_unique<HealingPotion>();
+        default: return std::make_unique<HealingPotion>(); // wont ever be reached, kept for comp. safety
     }
 }
 
 void GameManager::loginUser()
 {
-    std::string inputUsername, inputPassword;
+    std::println("\n--- Login ---");
+    std::print("Username: ");
+    std::fflush(stdout);
+    std::string inputUsername = Input::getString();
 
-    std::cout << "\n--- Login ---\n";
-    std::cout << "Username: ";
-    std::cin >> inputUsername;
-    std::cout << "Paswsord: ";
-    std::cin >> inputPassword;
+    std::print("Password: ");
+    std::fflush(stdout);
+    std::string inputPassword = Input::getString();
 
     auto it = std::find_if(_users.begin(), _users.end(),
         [&inputUsername, &inputPassword](const std::unique_ptr<User>& user)
@@ -170,11 +175,10 @@ void GameManager::loginUser()
     if (it != _users.end())
     {
         _currentUser = it->get();
-
-        std::cout << "Successful login! Welcome, " << _currentUser->getUsername() << "!\n";
+        std::println("Successful login! Welcome, {}!", _currentUser->getUsername());
     }
     else
     {
-        std::cout << "Combination of username and password doesn't exist!\n";
+        std::println("Combination of username and password doesn't exist!");
     }
 }

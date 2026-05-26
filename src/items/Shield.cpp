@@ -1,11 +1,12 @@
-﻿#include "Shield.h"
+﻿#include <print>
+
+#include "Shield.h"
 #include "../characters/Character.h"
-#include <iostream>
 
 Shield::Shield() : Item("Shield", 100) { }
 
 void Shield::use(Character* myHero, Character* enemyHero)
 {
-    std::cout << "\n[Item] " << myHero->getName() << " raised a Shield. The next attack will deal no damage." << std::endl;
+    std::println("\n[Item] {} raised a Shield. The next attack will deal no damage.", myHero->getName());
     myHero->setShieldActive(true);
 }

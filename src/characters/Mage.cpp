@@ -1,6 +1,9 @@
-﻿#include "Mage.h"
-#include <cstdlib>
-#include <iostream>
+﻿#include <cstdlib>
+#include <print>
+
+#include "Mage.h"
+
+#include "../utils/Input.h"
 
 Mage::Mage(const std::string& name) : Character(name, 12, 12) { }
 
@@ -15,19 +18,17 @@ int Mage::calculateDamage()
 {
     int baseDamage = (std::rand() % _maxDamage) + 1;
     
-    std::cout << "\n[Mage] " << _name << " will deal: " << baseDamage << "dmg" << std::endl;
-    std::cout << "Do you want to activate Spell Magnification? "
-                << "(Damage is transmuted by the formula: 12 - " << baseDamage << "dmg)? (y/n): ";
-    
-    char choice;
-    std::cin >> choice;
-    
-    if (choice == 'y' || choice == 'Y') {
+    std::println("\n[Mage] {} will deal: {}dmg", _name, baseDamage);
+    std::print("Do you want to activate Spell Magnification? (Damage transmuted to 12 - {}dmg)? (y/n): ", baseDamage);
+    std::fflush(stdout);
+
+    if (Input::getYesNo())
+    {
         int newDamage = 12 - baseDamage;
-        std::cout << "Spell Magnification was activated! Spell will now deal: " << newDamage << "dmg" << std::endl;
+        std::println("Spell Magnification activated! Spell will now deal: {}dmg", newDamage);
         return newDamage;
     }
-    
-    std::cout << "Spell was weak and will deal: " << baseDamage << "dmg" << std::endl;
+
+    std::println("Spell was weak and will deal: {}dmg", baseDamage);
     return baseDamage;
 }
