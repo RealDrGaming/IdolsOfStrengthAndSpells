@@ -78,7 +78,10 @@ void GameManager::showUserMenu()
         StoreManager store(_currentUser);
         store.open();
     }
-    else if (choice == 3); // todo: implement ranking system
+    else if (choice == 3)
+    {
+        showLeaderboard();
+    }
     else if (choice == 4)
     {
         // logout
@@ -180,5 +183,41 @@ void GameManager::loginUser()
     else
     {
         std::println("Combination of username and password doesn't exist!");
+    }
+}
+
+void GameManager::showLeaderboard()
+{
+    std::println("\n=== Leaderboard ===");
+
+    if (_users.empty())
+    {
+        std::println("There are no registered users!");
+        return;
+    }
+
+    std::vector<User*> sortedUsers(_users.size());
+
+    for (size_t i = 0; i < _users.size(); ++i)
+    {
+        sortedUsers[i] = _users[i].get();
+    }
+
+    std::ranges::sort(sortedUsers, [](User* a, User* b)
+    {
+        if (a->getBattlesWon() != b->getBattlesWon())
+            return a->getBattlesWon() > b->getBattlesWon();
+
+        if (a->getTotalXP() != b->getTotalXP())
+            return a->getTotalXP() > b->getTotalXP();
+
+        return a->getWinRate() > b->getWinRate();
+    });
+
+    for (size_t i = 0; i < sortedUsers.size(); ++i)
+    {
+        User* u = sortedUsers[i];
+        std::println("{}. {} | Wins: {} | Total XP: {} | Win Rate: {:.2f}%",
+                     i + 1, u->getUsername(), u->getBattlesWon(), u->getTotalXP(), u->getWinRate() * 100.0);
     }
 }

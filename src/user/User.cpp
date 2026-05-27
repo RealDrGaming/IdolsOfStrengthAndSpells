@@ -25,6 +25,11 @@ double User::getWinRate() const
     return (static_cast<double>(_battlesWon) / _battlesPlayed) * 100.0;
 }
 
+int User::getBattlesWon() const
+{
+    return _battlesWon;
+}
+
 bool User::checkPassword(const std::string& inputPass) const
 {
     return _password == inputPass;

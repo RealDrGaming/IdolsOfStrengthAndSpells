@@ -27,6 +27,7 @@ public:
     int getTotalXP() const;
     int getAvailableXP() const;
     double getWinRate() const;
+    int getBattlesWon() const;
     bool checkPassword(const std::string& inputPass) const;
 
     void addXP(int amount);

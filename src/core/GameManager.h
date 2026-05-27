@@ -21,6 +21,8 @@ private:
     std::unique_ptr<Character> chooseStartingCharacter();
     std::unique_ptr<Item> chooseStartingItem();
 
+    void showLeaderboard();
+
 public:
     GameManager(const GameManager&) = delete;
     GameManager& operator=(const GameManager&) = delete;
