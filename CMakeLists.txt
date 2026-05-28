@@ -38,4 +38,6 @@ add_executable(IdolsOfStrengthAndSpells
         src/core/StoreManager.cpp
         src/core/StoreManager.h
         src/utils/Input.cpp
-        src/utils/Input.h)
+        src/utils/Input.h
+        src/core/BattleManager.cpp
+        src/core/BattleManager.h)

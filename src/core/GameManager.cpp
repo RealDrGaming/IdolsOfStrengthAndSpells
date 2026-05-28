@@ -16,6 +16,7 @@
 #include "../items/Shield.h"
 
 #include "StoreManager.h"
+#include "BattleManager.h"
 
 #include "../utils/Input.h"
 
@@ -72,7 +73,20 @@ void GameManager::showUserMenu()
 
     int choice = Input::getInt(1, 4);
 
-    if (choice == 1); //todo: implement battling
+    if (choice == 1)
+    {
+        User* opponent = BattleManager::findMatch(_currentUser, _users);
+
+        if (opponent == nullptr)
+        {
+            std::println("Not enough registered users for battling!");
+        }
+        else
+        {
+            BattleManager battle(_currentUser, opponent);
+            battle.startBattle();
+        }
+    }
     else if (choice == 2)
     {
         StoreManager store(_currentUser);
