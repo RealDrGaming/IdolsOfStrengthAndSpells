@@ -22,10 +22,10 @@ public:
 
     virtual ~Character() = default;
 
-    virtual void takeDamage(int amount) = 0;
-    virtual int calculateDamage() = 0;
+    void takeDamage(int amount);
 
-    virtual void triggerSpecialAbility();
+    virtual int calculateDamage() = 0;
+    virtual int calculateDefense();
 
     const std::string& getName() const;
     int getCurrentHP() const;

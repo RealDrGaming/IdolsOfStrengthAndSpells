@@ -106,9 +106,28 @@ void GameManager::showUserMenu()
 void GameManager::registerUser()
 {
     std::println("\n--- Register ---");
-    std::print("Username: ");
-    std::fflush(stdout);
-    std::string username = Input::getString();
+
+    std::string username;
+    bool isUnique = false;
+
+    while (!isUnique)
+    {
+        std::print("Username: ");
+        std::fflush(stdout);
+        username = Input::getString();
+
+        auto it = std::find_if(_users.begin(), _users.end(),
+            [&username](const std::unique_ptr<User>& u) { return u->getUsername() == username; });
+
+        if (it != _users.end())
+        {
+            std::println("Error: The username '{}' is already taken! Please choose another.", username);
+        }
+        else
+        {
+            isUnique = true;
+        }
+    }
 
     std::print("Password: ");
     std::fflush(stdout);
@@ -123,7 +142,7 @@ void GameManager::registerUser()
     newUser->addItem(chooseStartingItem());
 
     _users.emplace_back(std::move(newUser));
-    std::println("Registered! You can enter your profile now!.");
+    std::println("Registered! You can enter your profile now.");
 }
 
 std::unique_ptr<Character> GameManager::chooseStartingCharacter()

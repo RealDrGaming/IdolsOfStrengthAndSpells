@@ -8,35 +8,55 @@
 
 Archer::Archer(const std::string& name) : Character(name, 15, 8) { }
 
-void Archer::takeDamage(int amount)
-{
-    _currHp -= amount;
-
-    if (_currHp < 0) _currHp = 0;
-}
-
 int Archer::calculateDamage()
 {
     int baseDamage = (std::rand() % _maxDamage) + 1;
+    int mult = this->hasBladeActive() ? 2 : 1;
+
+    if (this->hasMirrorActive())
+    {
+        std::println(">>> {} is affected by a Mirror! Special active abilities are blocked!", _name);
+        this->setMirrorActive(false);
+
+        if (this->hasBladeActive()) this->setBladeActive(false);
+        return baseDamage * mult;
+    }
+
+    std::println("\n[Archer] {} rolled a base damage of {}!", _name, baseDamage);
+
+    if (this->hasBladeActive())
+    {
+        std::println(">>> Blade is active! Base damage will be multiplied by {}!", mult);
+    }
+
+    int standardDamage = baseDamage * mult;
+    int finalDamage = standardDamage;
 
     if (baseDamage >= 1 && baseDamage <= 4)
     {
-        std::println("\n[Archer] {} will deal: {}dmg", _name, baseDamage);
-        std::print("Do you want to use Poison Arrow and double the damage dealt? (y/n): ");
+        int poisonDamage = (baseDamage * 2) * mult;
+
+        std::println("Standard attack will deal: {}dmg", standardDamage);
+        std::print("Activate Poison Arrow? (Base {} becomes {}, total with multipliers: {}dmg)? (y/n): ",
+                   baseDamage, baseDamage * 2, poisonDamage);
         std::fflush(stdout);
 
         if (Input::getYesNo())
         {
-            int newDamage = baseDamage * 2;
-            std::println("Poison Arrow was activated! Damage will now be: {}dmg", newDamage);
-            return newDamage;
+            std::println("Poison Arrow was activated! Damage will now be: {}dmg", poisonDamage);
+            finalDamage = poisonDamage;
+        }
+        else
+        {
+            std::println("Standard attack will deal: {}dmg", standardDamage);
         }
     }
     else
     {
-        std::println("\n[Archer] {} will deal: {}", _name, baseDamage);
-        std::println("Damage is above 4, Poison Arrow cannot be activated!");
+        std::println("Standard attack will deal: {}dmg", standardDamage);
+        std::println("Base damage is above 4, Poison Arrow cannot be activated!");
     }
 
-    return baseDamage;
+    if (this->hasBladeActive()) this->setBladeActive(false);
+    return finalDamage;
 }

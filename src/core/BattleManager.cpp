@@ -1,6 +1,5 @@
 ﻿#include <print>
 #include <cstdio>
-#include <cmath>
 #include <cstdlib>
 #include <limits>
 
@@ -12,15 +11,15 @@ User* BattleManager::findMatch(User* initiator, const std::vector<std::unique_pt
     User* bestMatch = nullptr;
     int minDiff = std::numeric_limits<int>::max();
 
-    for (const auto& u : allUsers)
+    for (const auto& user : allUsers)
     {
-        if (u.get() == initiator) continue;
+        if (user.get() == initiator) continue;
 
-        int diff = std::abs(u->getBattlesWon() - initiator->getBattlesWon());
+        int diff = std::abs(user->getBattlesWon() - initiator->getBattlesWon());
         if (diff < minDiff)
         {
             minDiff = diff;
-            bestMatch = u.get();
+            bestMatch = user.get();
         }
     }
 
@@ -52,7 +51,7 @@ void BattleManager::startBattle()
         if (isPlayer1Turn)
         {
             playTurn(_player1, _hero1, _player2, _hero2);
-            if (_hero2->getCurrentHP() <= 0) 
+            if (_hero2->getCurrentHP() <= 0)
             {
                 resolveBattle(_player1, _hero1, _player2, _hero2);
                 battleOver = true;
@@ -61,49 +60,126 @@ void BattleManager::startBattle()
         else
         {
             playTurn(_player2, _hero2, _player1, _hero1);
-            if (_hero1->getCurrentHP() <= 0) 
+            if (_hero1->getCurrentHP() <= 0)
             {
                 resolveBattle(_player2, _hero2, _player1, _hero1);
                 battleOver = true;
             }
         }
 
-        isPlayer1Turn = !isPlayer1Turn; 
+        isPlayer1Turn = !isPlayer1Turn;
     }
 }
 
 void BattleManager::playTurn(User* attackerUser, Character* attacker, User* defenderUser, Character* defender)
 {
-    std::println("\n--- {}'s turn! (Character: {}, HP: {}) ---",
-        attackerUser->getUsername(), attacker->getName(), attacker->getCurrentHP());
-    
-    std::println("1. Attack");
-    std::println("2. Use Item");
+    bool turnCompleted = false;
+
+    while (!turnCompleted)
+    {
+        std::println("\n--- {}'s turn! (Character: {}, HP: {}) ---",
+            attackerUser->getUsername(), attacker->getName(), attacker->getCurrentHP());
+
+        std::println("1. Attack");
+        std::println("2. Use Item");
+        std::print("I choose: ");
+        std::fflush(stdout);
+
+        int choice = Input::getInt(1, 2);
+
+        if (choice == 1)
+        {
+            int dmg = attacker->calculateDamage();
+
+            if (dmg > 0 && promptInterruptItem(defenderUser, "Shield"))
+            {
+                std::println(">>> {} used a Shield from inventory! All incoming damage is blocked!", defenderUser->getUsername());
+                dmg = 0;
+            }
+
+            if (dmg > 0)
+            {
+                int block = defender->calculateDefense();
+                dmg -= block;
+                if (dmg < 0) dmg = 0;
+            }
+
+            std::println("\n>>> {} deals {} DMG to {}!", attacker->getName(), dmg, defender->getName());
+            defender->takeDamage(dmg);
+            std::println("{} has {} HP remaining.", defender->getName(), defender->getCurrentHP());
+
+            turnCompleted = true;
+        }
+        else if (choice == 2)
+        {
+            turnCompleted = useItemTurn(attackerUser, attacker, defenderUser, defender);
+        }
+    }
+}
+
+bool BattleManager::useItemTurn(User* attackerUser, Character* attacker, User* defenderUser, Character* defender)
+{
+    const auto& items = attackerUser->getItems();
+
+    if (items.empty())
+    {
+        std::println("Your inventory is empty! Choose another action.");
+        return false;
+    }
+
+    std::println("\n--- Inventory ---");
+    for (size_t i = 0; i < items.size(); ++i)
+    {
+        std::println("{}. {}", i + 1, items[i]->getName());
+    }
+    std::println("{}. Cancel", items.size() + 1);
     std::print("I choose: ");
     std::fflush(stdout);
 
-    int choice = Input::getInt(1, 2);
+    int choice = Input::getInt(1, static_cast<int>(items.size() + 1));
 
-    if (choice == 1)
+    if (choice == static_cast<int>(items.size() + 1))
     {
-        // TODO: Mirror check
-
-        int dmg = attacker->calculateDamage();
-
-        // TODO: Blade check
-
-        // TODO: Prompt interruption
-
-        // TODO: Warrior defense check
-
-        std::println("\n>>> {} deals {} DMG to {}!", attacker->getName(), dmg, defender->getName());
-        defender->takeDamage(dmg);
-        std::println("{} has {} HP remaining.", defender->getName(), defender->getCurrentHP());
+        return false;
     }
-    else
+
+    size_t itemIndex = choice - 1;
+    Item* selectedItem = items[itemIndex].get();
+    selectedItem->use(attacker, defender);
+
+    if (selectedItem->getName() == "Mirror")
     {
-        std::println("Items not implemented yet!");
+        if (promptInterruptItem(defenderUser, "Ray"))
+        {
+            std::println(">>> {} immediately used a Ray! The Mirror is shattered!", defenderUser->getUsername());
+            defender->setMirrorActive(false);
+        }
     }
+
+    attackerUser->removeItem(itemIndex);
+    return true;
+}
+
+bool BattleManager::promptInterruptItem(User* defendingUser, const std::string& itemName)
+{
+    const auto& items = defendingUser->getItems();
+
+    for (size_t i = 0; i < items.size(); ++i)
+    {
+        if (items[i]->getName() == itemName)
+        {
+            std::print("\n[INTERRUPT] {}, you have a {}! Do you want to use it now? (y/n): ", defendingUser->getUsername(), itemName);
+            std::fflush(stdout);
+
+            if (Input::getYesNo())
+            {
+                defendingUser->removeItem(i);
+                return true;
+            }
+            return false;
+        }
+    }
+    return false;
 }
 
 Character* BattleManager::chooseHero(User* player)
@@ -115,10 +191,10 @@ Character* BattleManager::chooseHero(User* player)
 
     for (size_t i = 0; i < heroes.size(); ++i)
     {
-        std::println("{}. {} (HP: {}/{})", 
+        std::println("{}. {} (HP: {}/{})",
             i + 1, heroes[i]->getName(), heroes[i]->getCurrentHP(), heroes[i]->getMaxHP());
     }
-    
+
     std::print("I choose: ");
     std::fflush(stdout);
 
@@ -129,7 +205,7 @@ Character* BattleManager::chooseHero(User* player)
 void BattleManager::resolveBattle(User* winner, Character* winnerHero, User* loser, Character* loserHero)
 {
     std::println("\n=================================");
-    std::println("BATTLE ENDED! WINNNER: {}!", winner->getUsername());
+    std::println("BATTLE ENDED! WINNER: {}!", winner->getUsername());
     std::println("=================================");
 
     winner->recordBattleResult(true);

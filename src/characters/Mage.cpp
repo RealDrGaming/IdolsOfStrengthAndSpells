@@ -7,28 +7,47 @@
 
 Mage::Mage(const std::string& name) : Character(name, 12, 12) { }
 
-void Mage::takeDamage(int amount)
-{
-    _currHp -= amount;
-
-    if (_currHp < 0) _currHp = 0;
-}
-
 int Mage::calculateDamage()
 {
     int baseDamage = (std::rand() % _maxDamage) + 1;
-    
-    std::println("\n[Mage] {} will deal: {}dmg", _name, baseDamage);
-    std::print("Do you want to activate Spell Magnification? (Damage transmuted to 12 - {}dmg)? (y/n): ", baseDamage);
+    int mult = this->hasBladeActive() ? 2 : 1;
+
+    if (this->hasMirrorActive())
+    {
+        std::println(">>> {} is affected by a Mirror! Special active abilities are blocked!", _name);
+        this->setMirrorActive(false);
+
+        if (this->hasBladeActive()) this->setBladeActive(false);
+        return baseDamage * mult;
+    }
+
+    std::println("\n[Mage] {} rolled a base damage of {}!", _name, baseDamage);
+
+    if (this->hasBladeActive())
+    {
+        std::println(">>> Blade is active! Base damage will be multiplied by {}!", mult);
+    }
+
+    int standardDamage = baseDamage * mult;
+    int potentialDamage = (12 - baseDamage) * mult;
+
+    std::println("Standard attack will deal: {}dmg", standardDamage);
+    std::print("Activate Spell Magnification? (Base {} becomes {}, total with multipliers: {}dmg)? (y/n): ",
+               baseDamage, 12 - baseDamage, potentialDamage);
     std::fflush(stdout);
+
+    int finalDamage = standardDamage;
 
     if (Input::getYesNo())
     {
-        int newDamage = 12 - baseDamage;
-        std::println("Spell Magnification activated! Spell will now deal: {}dmg", newDamage);
-        return newDamage;
+        std::println("Spell Magnification activated! Spell will now deal: {}dmg", potentialDamage);
+        finalDamage = potentialDamage;
+    }
+    else
+    {
+        std::println("Spell was weak and will deal: {}dmg", standardDamage);
     }
 
-    std::println("Spell was weak and will deal: {}dmg", baseDamage);
-    return baseDamage;
+    if (this->hasBladeActive()) this->setBladeActive(false);
+    return finalDamage;
 }

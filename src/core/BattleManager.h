@@ -18,6 +18,9 @@ private:
     void playTurn(User* attackerUser, Character* attacker, User* defenderUser, Character* defender);
     void resolveBattle(User* winner, Character* winnerHero, User* loser, Character* loserHero);
 
+    bool useItemTurn(User* attackerUser, Character* attacker, User* defenderUser, Character* defender);
+    bool promptInterruptItem(User* defendingUser, const std::string& itemName);
+
 public:
     static User* findMatch(User* initiator, const std::vector<std::unique_ptr<User>>& allUsers);
 

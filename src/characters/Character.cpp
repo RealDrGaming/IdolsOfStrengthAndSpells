@@ -4,7 +4,17 @@ Character::Character(const std::string& name, int hp, int maxDamage)
     : _name(name), _maxHp(hp), _currHp(hp), _level(1), _maxDamage(maxDamage), _ownerUsername(""),
         _hasBladeActive(false), _hasMirrorActive(false), _hasShieldActive(false) { }
 
-void Character::triggerSpecialAbility() { }
+void Character::takeDamage(int amount)
+{
+    _currHp -= amount;
+
+    if (_currHp < 0) _currHp = 0;
+}
+
+int Character::calculateDefense()
+{
+    return 0;
+}
 
 const std::string& Character::getName() const { return _name; }
 int Character::getCurrentHP() const { return _currHp; }
