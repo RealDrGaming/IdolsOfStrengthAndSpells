@@ -9,8 +9,18 @@ namespace Input
     std::string getString()
     {
         std::string input;
-        std::getline(std::cin, input);
-        return input;
+
+        while (true)
+        {
+            std::getline(std::cin, input);
+            if (input.find('|') != std::string::npos)
+            {
+                std::print("The character '|' is forbidden!");
+                std::fflush(stdout);
+                continue;
+            }
+            return input;
+        }
     }
 
     int getInt(int min, int max)
