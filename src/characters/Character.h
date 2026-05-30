@@ -39,6 +39,9 @@ public:
 
     void setOwner(const std::string& ownerName);
 
+    int getMaxDamage() const;
+    void loadState(int currHp, int maxHp, int level, int maxDamage);
+
     void levelUpMaxHealth();
     void levelUpMaxDamage();
 

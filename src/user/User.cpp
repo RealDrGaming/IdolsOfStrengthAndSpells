@@ -35,6 +35,18 @@ bool User::checkPassword(const std::string& inputPass) const
     return _password == inputPass;
 }
 
+std::string User::getPassword() const { return _password; }
+
+int User::getBattlesPlayed() const { return _battlesPlayed; }
+
+void User::loadState(int totalXP, int availableXP, int battlesPlayed, int battlesWon)
+{
+    _totalXP = totalXP;
+    _availableXP = availableXP;
+    _battlesPlayed = battlesPlayed;
+    _battlesWon = battlesWon;
+}
+
 void User::addXP(int amount)
 {
     _totalXP += amount;

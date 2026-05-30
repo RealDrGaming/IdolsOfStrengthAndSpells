@@ -44,6 +44,16 @@ void Character::setOwner(const std::string& ownerName)
     _ownerUsername = ownerName;
 }
 
+int Character::getMaxDamage() const { return _maxDamage; }
+
+void Character::loadState(int currHp, int maxHp, int level, int maxDamage)
+{
+    _currHp = currHp;
+    _maxHp = maxHp;
+    _level = level;
+    _maxDamage = maxDamage;
+}
+
 void Character::levelUpMaxHealth()
 {
     _level++;

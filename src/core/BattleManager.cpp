@@ -1,4 +1,4 @@
-﻿#include <print>
+#include <print>
 #include <cstdio>
 #include <cstdlib>
 #include <limits>
@@ -91,7 +91,13 @@ void BattleManager::playTurn(User* attackerUser, Character* attacker, User* defe
         {
             int dmg = attacker->calculateDamage();
 
-            if (dmg > 0 && promptInterruptItem(defenderUser, "Shield"))
+            if (dmg > 0 && defender->hasShieldActive())
+            {
+                std::println(">>> {}'s Shield is active! All incoming damage is blocked!", defender->getName());
+                dmg = 0;
+                defender->setShieldActive(false);
+            }
+            else if (dmg > 0 && promptInterruptItem(defenderUser, "Shield"))
             {
                 std::println(">>> {} used a Shield from inventory! All incoming damage is blocked!", defenderUser->getUsername());
                 dmg = 0;

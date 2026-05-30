@@ -1,4 +1,4 @@
-﻿#include <cstdlib>
+#include <cstdlib>
 #include <print>
 
 #include "Mage.h"
@@ -11,15 +11,6 @@ int Mage::calculateDamage()
 {
     int baseDamage = (std::rand() % _maxDamage) + 1;
     int mult = this->hasBladeActive() ? 2 : 1;
-
-    if (this->hasMirrorActive())
-    {
-        std::println(">>> {} is affected by a Mirror! Special active abilities are blocked!", _name);
-        this->setMirrorActive(false);
-
-        if (this->hasBladeActive()) this->setBladeActive(false);
-        return baseDamage * mult;
-    }
 
     std::println("\n[Mage] {} rolled a base damage of {}!", _name, baseDamage);
 
@@ -40,8 +31,16 @@ int Mage::calculateDamage()
 
     if (Input::getYesNo())
     {
-        std::println("Spell Magnification activated! Spell will now deal: {}dmg", potentialDamage);
-        finalDamage = potentialDamage;
+        if (this->hasMirrorActive())
+        {
+            std::println(">>> {} is affected by a Mirror! The Spell Magnification is blocked!", _name);
+            this->setMirrorActive(false);
+        }
+        else
+        {
+            std::println("Spell Magnification activated! Spell will now deal: {}dmg", potentialDamage);
+            finalDamage = potentialDamage;
+        }
     }
     else
     {

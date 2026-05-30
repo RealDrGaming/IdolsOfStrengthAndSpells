@@ -19,6 +19,7 @@
 #include "BattleManager.h"
 
 #include "../utils/Input.h"
+#include "../utils/Serializer.h"
 
 GameManager::GameManager() : _currentUser(nullptr) { }
 
@@ -32,11 +33,20 @@ GameManager& GameManager::getInstance()
 void GameManager::run() {
     bool isRunning = true;
 
+    Serializer::loadGame(_users, "savegame.txt");
+
     while (isRunning)
     {
         if (_currentUser == nullptr) isRunning = showMainMenu();
         else showUserMenu();
+
+        if (isRunning)
+        {
+            Serializer::saveGame(_users, "savegame.txt");
+        }
     }
+
+    Serializer::saveGame(_users, "savegame.txt");
 }
 
 bool GameManager::showMainMenu()
@@ -194,28 +204,37 @@ std::unique_ptr<Item> GameManager::chooseStartingItem()
 void GameManager::loginUser()
 {
     std::println("\n--- Login ---");
-    std::print("Username: ");
-    std::fflush(stdout);
-    std::string inputUsername = Input::getString();
 
-    std::print("Password: ");
+    if (_users.empty())
+    {
+        std::println("No users are currently registered. Please register first.");
+        return;
+    }
+
+    std::println("Select a user profile:");
+    for (size_t i = 0; i < _users.size(); ++i)
+    {
+        std::println("{}. {}", i + 1, _users[i]->getUsername());
+    }
+
+    std::print("I choose: ");
+    std::fflush(stdout);
+
+    int choice = Input::getInt(1, static_cast<int>(_users.size()));
+    User* selectedUser = _users[choice - 1].get();
+
+    std::print("Password for {}: ", selectedUser->getUsername());
     std::fflush(stdout);
     std::string inputPassword = Input::getString();
 
-    auto it = std::find_if(_users.begin(), _users.end(),
-        [&inputUsername, &inputPassword](const std::unique_ptr<User>& user)
-        {
-            return user->getUsername() == inputUsername && user->checkPassword(inputPassword);
-        });
-
-    if (it != _users.end())
+    if (selectedUser->checkPassword(inputPassword))
     {
-        _currentUser = it->get();
+        _currentUser = selectedUser;
         std::println("Successful login! Welcome, {}!", _currentUser->getUsername());
     }
     else
     {
-        std::println("Combination of username and password doesn't exist!");
+        std::println("Error: Incorrect password!");
     }
 }
 

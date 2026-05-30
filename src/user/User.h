@@ -30,6 +30,10 @@ public:
     int getBattlesWon() const;
     bool checkPassword(const std::string& inputPass) const;
 
+    std::string getPassword() const;
+    int getBattlesPlayed() const;
+    void loadState(int totalXP, int availableXP, int battlesPlayed, int battlesWon);
+
     void addXP(int amount);
     bool spendXP(int amount);
     void recordBattleResult(bool won);
