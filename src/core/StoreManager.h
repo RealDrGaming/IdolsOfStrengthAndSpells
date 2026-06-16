@@ -1,8 +1,8 @@
 ﻿#pragma once
 
 #include <memory>
-#include "user/User.h"
-#include "characters/Character.h"
+#include "../user/User.h"
+#include "../characters/Character.h"
 
 class StoreManager
 {
@@ -12,8 +12,6 @@ private:
     void buyItem();
     void buyCharacter();
     void levelUpCharacter();
-
-    std::unique_ptr<Character> createCharacterForSale();
 
 public:
     StoreManager(User* customer);

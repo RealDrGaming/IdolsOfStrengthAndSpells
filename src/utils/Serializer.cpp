@@ -52,8 +52,7 @@ void Serializer::saveGame(const std::vector<std::unique_ptr<User>>& users, const
     file.close();
 }
 
-void Serializer::loadGame(std::vector<std::unique_ptr<User>>& users, const std::string& filepath)
-{
+void Serializer::loadGame(std::vector<std::unique_ptr<User>>& users, const std::string& filepath) {
     std::ifstream file(filepath);
 
     if (!file.is_open()) return;
@@ -66,52 +65,58 @@ void Serializer::loadGame(std::vector<std::unique_ptr<User>>& users, const std::
     {
         if (line.empty()) continue;
 
-        std::stringstream ss(line);
-        std::string token;
-        std::vector<std::string> tokens;
-
-        while (std::getline(ss, token, '|'))
+        try
         {
-            tokens.push_back(token);
-        }
+            std::stringstream ss(line);
+            std::string token;
+            std::vector<std::string> tokens;
 
-        if (tokens[0] == "USER" && tokens.size() >= 7)
-        {
-            auto newUser = std::make_unique<User>(tokens[1], tokens[2]);
-            newUser->loadState(std::stoi(tokens[3]), std::stoi(tokens[4]), std::stoi(tokens[5]), std::stoi(tokens[6]));
-
-            users.push_back(std::move(newUser));
-            currentUser = users.back().get();
-        }
-        else if (tokens[0] == "CHARACTER" && tokens.size() >= 7 && currentUser)
-        {
-            std::unique_ptr<Character> hero;
-            if (tokens[1] == "Warrior") hero = std::make_unique<Warrior>(tokens[2]);
-            else if (tokens[1] == "Mage") hero = std::make_unique<Mage>(tokens[2]);
-            else if (tokens[1] == "Archer") hero = std::make_unique<Archer>(tokens[2]);
-
-            if (hero)
+            while (std::getline(ss, token, '|'))
             {
-                hero->loadState(std::stoi(tokens[3]), std::stoi(tokens[4]), std::stoi(tokens[5]), std::stoi(tokens[6]));
-                currentUser->addCharacter(std::move(hero));
+                tokens.push_back(token);
+            }
+
+            if (tokens[0] == "USER" && tokens.size() >= 7)
+            {
+                auto newUser = std::make_unique<User>(tokens[1], tokens[2]);
+                newUser->loadState(std::stoi(tokens[3]), std::stoi(tokens[4]),
+                                   std::stoi(tokens[5]), std::stoi(tokens[6]));
+                users.push_back(std::move(newUser));
+                currentUser = users.back().get();
+            }
+            else if (tokens[0] == "CHARACTER" && tokens.size() >= 7 && currentUser)
+            {
+                std::unique_ptr<Character> hero;
+                if (tokens[1] == "Warrior") hero = std::make_unique<Warrior>(tokens[2]);
+                else if (tokens[1] == "Mage")    hero = std::make_unique<Mage>(tokens[2]);
+                else if (tokens[1] == "Archer")  hero = std::make_unique<Archer>(tokens[2]);
+
+                if (hero)
+                {
+                    hero->loadState(std::stoi(tokens[3]), std::stoi(tokens[4]),
+                                    std::stoi(tokens[5]), std::stoi(tokens[6]));
+                    currentUser->addCharacter(std::move(hero));
+                }
+            }
+            else if (tokens[0] == "ITEM" && tokens.size() >= 2 && currentUser)
+            {
+                std::unique_ptr<Item> item;
+                if      (tokens[1] == "Healing Potion") item = std::make_unique<HealingPotion>();
+                else if (tokens[1] == "Blade")          item = std::make_unique<Blade>();
+                else if (tokens[1] == "Mirror")         item = std::make_unique<Mirror>();
+                else if (tokens[1] == "Ray")            item = std::make_unique<Ray>();
+                else if (tokens[1] == "Shield")         item = std::make_unique<Shield>();
+
+                if (item) currentUser->addItem(std::move(item));
+            }
+            else if (tokens[0] == "END_USER")
+            {
+                currentUser = nullptr;
             }
         }
-        else if (tokens[0] == "ITEM" && tokens.size() >= 2 && currentUser)
+        catch (const std::exception& e)
         {
-            std::unique_ptr<Item> item;
-            if (tokens[1] == "Healing Potion") item = std::make_unique<HealingPotion>();
-            else if (tokens[1] == "Blade") item = std::make_unique<Blade>();
-            else if (tokens[1] == "Mirror") item = std::make_unique<Mirror>();
-            else if (tokens[1] == "Ray") item = std::make_unique<Ray>();
-            else if (tokens[1] == "Shield") item = std::make_unique<Shield>();
-
-            if (item) currentUser->addItem(std::move(item));
-        }
-        else if (tokens[0] == "END_USER")
-        {
-            currentUser = nullptr;
+            std::println("Warning: Skipping corrupted save line: {}", line);
         }
     }
-
-    file.close();
 }

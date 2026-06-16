@@ -13,15 +13,6 @@ int Archer::calculateDamage()
     int baseDamage = (std::rand() % _maxDamage) + 1;
     int mult = this->hasBladeActive() ? 2 : 1;
 
-    if (this->hasMirrorActive())
-    {
-        std::println(">>> {} is affected by a Mirror! Special active abilities are blocked!", _name);
-        this->setMirrorActive(false);
-
-        if (this->hasBladeActive()) this->setBladeActive(false);
-        return baseDamage * mult;
-    }
-
     std::println("\n[Archer] {} rolled a base damage of {}!", _name, baseDamage);
 
     if (this->hasBladeActive())
@@ -37,18 +28,26 @@ int Archer::calculateDamage()
         int poisonDamage = (baseDamage * 2) * mult;
 
         std::println("Standard attack will deal: {}dmg", standardDamage);
-        std::print("Activate Poison Arrow? (Base {} becomes {}, total with multipliers: {}dmg)? (y/n): ",
-                   baseDamage, baseDamage * 2, poisonDamage);
-        std::fflush(stdout);
-
-        if (Input::getYesNo())
+        if (this->hasMirrorActive())
         {
-            std::println("Poison Arrow was activated! Damage will now be: {}dmg", poisonDamage);
-            finalDamage = poisonDamage;
+            std::println(">>> {} is affected by a Mirror! Poison Arrow is blocked!", _name);
+            this->setMirrorActive(false);
         }
         else
         {
-            std::println("Standard attack will deal: {}dmg", standardDamage);
+            std::print("Activate Poison Arrow? (Base: {} Becomes: {}. Total with multipliers: {}dmg)? (y/n): ",
+                       baseDamage, baseDamage * 2, poisonDamage);
+            std::fflush(stdout);
+
+            if (Input::getYesNo())
+            {
+                std::println("Poison Arrow was activated! Damage will now be: {}dmg", poisonDamage);
+                finalDamage = poisonDamage;
+            }
+            else
+            {
+                std::println("Standard attack will deal: {}dmg", standardDamage);
+            }
         }
     }
     else

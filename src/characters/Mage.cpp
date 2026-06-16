@@ -1,5 +1,6 @@
 #include <cstdlib>
 #include <print>
+#include <algorithm>
 
 #include "Mage.h"
 
@@ -20,10 +21,10 @@ int Mage::calculateDamage()
     }
 
     int standardDamage = baseDamage * mult;
-    int potentialDamage = (12 - baseDamage) * mult;
+    int potentialDamage = std::max(0, (12 - baseDamage)) * mult;
 
     std::println("Standard attack will deal: {}dmg", standardDamage);
-    std::print("Activate Spell Magnification? (Base {} becomes {}, total with multipliers: {}dmg)? (y/n): ",
+    std::print("Activate Spell Magnification? (Base: {} Becomes {}. Total with multipliers: {}dmg)? (y/n): ",
                baseDamage, 12 - baseDamage, potentialDamage);
     std::fflush(stdout);
 

@@ -270,6 +270,6 @@ void GameManager::showLeaderboard()
     {
         User* u = sortedUsers[i];
         std::println("{}. {} | Wins: {} | Total XP: {} | Win Rate: {:.2f}%",
-                     i + 1, u->getUsername(), u->getBattlesWon(), u->getTotalXP(), u->getWinRate() * 100.0);
+                     i + 1, u->getUsername(), u->getBattlesWon(), u->getTotalXP(), u->getWinRate());
     }
 }

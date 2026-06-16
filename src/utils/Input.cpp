@@ -13,9 +13,16 @@ namespace Input
         while (true)
         {
             std::getline(std::cin, input);
+
+            if (input.empty())
+            {
+                std::print("Input cannot be empty. Try again: ");
+                std::fflush(stdout);
+                continue;
+            }
             if (input.find('|') != std::string::npos)
             {
-                std::print("The character '|' is forbidden!");
+                std::print("The character '|' is forbidden! Try again: ");
                 std::fflush(stdout);
                 continue;
             }
@@ -34,7 +41,10 @@ namespace Input
 
             try
             {
-                choice = std::stoi(input);
+                size_t pos;
+                choice = std::stoi(input, &pos);
+                if (pos != input.size()) throw std::invalid_argument("trailing chars");
+
                 if (choice >= min && choice <= max) return choice;
                 
                 std::print("Out of range [{}-{}]. Try again: ", min, max);
